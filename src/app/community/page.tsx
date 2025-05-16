@@ -4,7 +4,7 @@ import React, { useMemo, useEffect, useRef } from 'react';
 import Navigation from '@/components/Navigation';
 import gsap from 'gsap';
 
-function generateStars(count: number, size: number) {
+function generateStars(count: number) {
   const stars = [];
   for (let i = 0; i < count; i++) {
     const x = Math.floor(Math.random() * 2000);
@@ -16,9 +16,9 @@ function generateStars(count: number, size: number) {
 
 function Starfield() {
   // Memoize so stars don't change on every render
-  const small = useMemo(() => generateStars(700, 1), []);
-  const medium = useMemo(() => generateStars(200, 2), []);
-  const big = useMemo(() => generateStars(100, 3), []);
+  const small = useMemo(() => generateStars(700), []);
+  const medium = useMemo(() => generateStars(200), []);
+  const big = useMemo(() => generateStars(100), []);
   return (
     <>
       <div id="stars" style={{ boxShadow: small }} />
