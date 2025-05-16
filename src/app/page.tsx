@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { FiHome, FiShare2, FiPlus, FiMessageCircle, FiZap } from 'react-icons/fi';
 import Navigation from '@/components/Navigation';
 import CircleTransition from '@/components/CircleTransition';
 
@@ -60,23 +59,9 @@ const TxtRotate: React.FC<TxtRotateProps> = ({ toRotate, period = 2000 }) => {
   );
 };
 
-// Helper to clean AI message (remove hashtags/headers)
-function cleanAIMessage(content: string) {
-  // Remove markdown headers and hashtags
-  return content.replace(/^#+\s*/gm, '').replace(/#/g, '').trim();
-}
-
-const ALLOWED_EMAILS = [
-  'student1@example.com',
-  'student2@example.com',
-  'student3@example.com',
-];
-
 export default function Home() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const router = useRouter();
-  const [distort, setDistort] = useState(false);
-  const [isParticleTransitioning, setIsParticleTransitioning] = useState(false);
 
   const handleStartChat = () => {
     router.push('/register');
@@ -90,7 +75,7 @@ export default function Home() {
   };
 
   return (
-    <main className={`min-h-screen relative overflow-hidden tech-grid-bg${isParticleTransitioning ? ' zoom-rapid' : ''}`}>
+    <main className={`min-h-screen relative overflow-hidden tech-grid-bg`}>
       <CircleTransition 
         isTransitioning={isTransitioning} 
         onTransitionComplete={() => setIsTransitioning(false)} 

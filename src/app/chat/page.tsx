@@ -96,7 +96,6 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isRecording, setIsRecording] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
