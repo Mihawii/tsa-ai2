@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef, useEffect } from 'react';
+import gsap from 'gsap';
 
 function generateStars(count: number) {
   const stars = [];
@@ -43,9 +44,19 @@ function Starfield() {
 }
 
 function AnimatedDescription() {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (ref.current) {
+      const words = ref.current.querySelectorAll('.desc-word');
+      gsap.fromTo(words,
+        { y: 40, opacity: 0 },
+        { y: 0, opacity: 1, stagger: 0.08, duration: 0.7, ease: 'power3.out', delay: 0.2 }
+      );
+    }
+  }, []);
   const text = "If you ever wished to have everything on the palm of your hand, give this a look";
   return (
-    <div className="container">
+    <div className="container" ref={ref}>
       <div className="community-desc-text">
         {text.split(' ').map((word, i) => (
           <span key={i} className="desc-word">{word} </span>
