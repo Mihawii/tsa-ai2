@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 interface TxtRotateProps {
@@ -13,7 +13,6 @@ const TxtRotate: React.FC<TxtRotateProps> = ({ toRotate, period = 2000 }) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [text, setText] = useState('');
   const [delta, setDelta] = useState(300 - Math.random() * 100);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const tick = () => {
     const i = loopNum % toRotate.length;
@@ -39,15 +38,10 @@ const TxtRotate: React.FC<TxtRotateProps> = ({ toRotate, period = 2000 }) => {
   };
 
   React.useEffect(() => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-        }
-    timeoutRef.current = setTimeout(tick, delta);
+    const timeoutRef = setTimeout(tick, delta);
     return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-  };
+      clearTimeout(timeoutRef);
+    };
   }, [text, delta, isDeleting, loopNum, toRotate, period]);
 
   return (
@@ -58,7 +52,6 @@ const TxtRotate: React.FC<TxtRotateProps> = ({ toRotate, period = 2000 }) => {
 };
 
 export default function Home() {
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const router = useRouter();
 
   const handleStartChat = () => {
