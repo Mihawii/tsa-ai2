@@ -83,8 +83,7 @@ export async function POST(req: Request) {
 
       if (error) throw error;
       knowledgeResults = data || [];
-    } catch (error) {
-      console.warn('Failed to fetch from Supabase:', error);
+    } catch {
       // Continue without Supabase data
     }
 
@@ -152,7 +151,6 @@ export async function POST(req: Request) {
     });
 
   } catch (error) {
-    console.error('Business Intelligence Error:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
     return NextResponse.json(
       { 
@@ -178,7 +176,7 @@ async function fetchMarketData() {
       marketSize: "Global AI market expected to reach $1.5T by 2030"
     };
   } catch {
-    console.warn('Failed to fetch market data');
+    // Failed to fetch market data
     return {};
   }
 }
@@ -193,7 +191,7 @@ async function getStartupInsights() {
       marketOpportunities: "Enterprise AI solutions showing strong growth"
     };
   } catch {
-    console.warn('Failed to fetch startup insights');
+    // Failed to fetch startup insights
     return {};
   }
 }
@@ -207,7 +205,7 @@ async function getTechnologyTrends() {
       innovationAreas: "Sustainable Tech, HealthTech, FinTech"
     };
   } catch {
-    console.warn('Failed to fetch technology trends');
+    // Failed to fetch technology trends
     return {};
   }
 }
@@ -221,7 +219,7 @@ async function getInnovationInsights() {
       futureTrends: "Convergence of AI, IoT, and Blockchain"
     };
   } catch {
-    console.warn('Failed to fetch innovation insights');
+    // Failed to fetch innovation insights
     return {};
   }
 } 

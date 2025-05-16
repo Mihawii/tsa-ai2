@@ -205,14 +205,12 @@ export default function ChatPage() {
         }];
       });
     } catch (error) {
-      console.error('Error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
       // Remove thinking message and add error message
       setMessages(prev => {
         const newMessages = prev.filter(msg => !msg.isThinking);
         return [...newMessages, { 
           role: 'ai', 
-          content: `Error: ${errorMessage}. Please try again or contact support if the issue persists.`,
+          content: `Error: ${error instanceof Error ? error.message : 'An unexpected error occurred'}. Please try again or contact support if the issue persists.`,
           type: 'text',
           timestamp: Date.now()
         }];
@@ -288,13 +286,12 @@ export default function ChatPage() {
         }];
       });
     } catch (error) {
-      console.error('Error:', error);
-      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      // Remove thinking message and add error message
       setMessages(prev => {
         const newMessages = prev.filter(msg => !msg.isThinking);
         return [...newMessages, {
           role: 'ai',
-          content: `Error: ${errorMessage}. Please try again or contact support if the issue persists.`,
+          content: `Error: ${error instanceof Error ? error.message : 'An unexpected error occurred'}. Please try again or contact support if the issue persists.`,
           type: 'text',
           timestamp: Date.now()
         }];

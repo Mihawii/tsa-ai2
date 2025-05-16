@@ -2,8 +2,6 @@
 
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Navigation from '@/components/Navigation';
-import CircleTransition from '@/components/CircleTransition';
 
 interface TxtRotateProps {
   toRotate: string[];
@@ -76,10 +74,10 @@ export default function Home() {
 
   return (
     <main className={`min-h-screen relative overflow-hidden tech-grid-bg`}>
-      <CircleTransition 
+      {/* <CircleTransition 
         isTransitioning={isTransitioning} 
         onTransitionComplete={() => setIsTransitioning(false)} 
-      />
+      /> */}
       <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
         <h1 className="text-6xl font-bold mb-4 text-white">
           TSa
@@ -106,7 +104,7 @@ export default function Home() {
           <span className="text">Start Chatting</span>
         </button>
       </div>
-      <Navigation onHomeClick={handleGoHome} />
+      {/* <Navigation onHomeClick={handleGoHome} /> */}
     </main>
   );
 }

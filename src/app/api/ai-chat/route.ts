@@ -122,7 +122,6 @@ RESPONSE:
       reasoning: reasoning.replace('REASONING:', '').trim()
     });
   } catch (error) {
-    console.error('AI Chat Error:', error);
     const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
     return NextResponse.json(
       { 

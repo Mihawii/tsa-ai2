@@ -1,8 +1,6 @@
 "use client";
 
-import React, { useMemo, useEffect, useRef } from 'react';
-import Navigation from '@/components/Navigation';
-import gsap from 'gsap';
+import React, { useMemo } from 'react';
 
 function generateStars(count: number) {
   const stars = [];
@@ -45,19 +43,9 @@ function Starfield() {
 }
 
 function AnimatedDescription() {
-  const ref = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    if (ref.current) {
-      const words = ref.current.querySelectorAll('.desc-word');
-      gsap.fromTo(words,
-        { y: 40, opacity: 0 },
-        { y: 0, opacity: 1, stagger: 0.08, duration: 0.7, ease: 'power3.out', delay: 0.2 }
-      );
-    }
-  }, []);
   const text = "If you ever wished to have everything on the palm of your hand, give this a look";
   return (
-    <div className="container" ref={ref}>
+    <div className="container">
       <div className="community-desc-text">
         {text.split(' ').map((word, i) => (
           <span key={i} className="desc-word">{word} </span>
@@ -124,7 +112,6 @@ export default function CommunityPage() {
           Join Our Discord Community
         </a>
       </div>
-      <Navigation onHomeClick={() => window.location.href = '/'} />
       <style jsx>{`
         .expanding-lines-container {
           position: relative;

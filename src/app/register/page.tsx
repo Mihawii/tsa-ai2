@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 
 const ALLOWED_EMAILS = [
   // Add your students' emails here
@@ -14,19 +13,14 @@ const ALLOWED_EMAILS = [
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
-  const router = useRouter();
   const [animateIn, setAnimateIn] = useState(false);
-
-  useEffect(() => {
-    setAnimateIn(true);
-  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (ALLOWED_EMAILS.includes(email.trim().toLowerCase())) {
       // Store email in localStorage/session (simple auth for demo)
       localStorage.setItem('ai_student_email', email.trim().toLowerCase());
-      router.push('/chat');
+      window.location.href = '/chat';
     } else {
       setError('Access denied. This AI is only for authorized students.');
     }
