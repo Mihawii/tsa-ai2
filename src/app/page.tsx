@@ -1,103 +1,140 @@
-import Image from "next/image";
+"use client";
+
+import React, { useState, useRef, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { FiHome, FiShare2, FiPlus, FiMessageCircle, FiZap, FiBookOpen, FiUser, FiTrendingUp, FiSend, FiImage, FiMic, FiMicOff, FiBriefcase } from 'react-icons/fi';
+import Navigation from '@/components/Navigation';
+import CircleTransition from '@/components/CircleTransition';
+
+interface ChatMessage {
+  role: 'user' | 'ai';
+  content: string;
+  type?: 'text' | 'image';
+  imageUrl?: string;
+  timestamp?: number;
+}
+
+interface TxtRotateProps {
+  toRotate: string[];
+  period?: number;
+    }
+
+const TxtRotate: React.FC<TxtRotateProps> = ({ toRotate, period = 2000 }) => {
+  const [loopNum, setLoopNum] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [text, setText] = useState('');
+  const [delta, setDelta] = useState(300 - Math.random() * 100);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const tick = () => {
+    const i = loopNum % toRotate.length;
+    const fullText = toRotate[i];
+    const updatedText = isDeleting
+      ? fullText.substring(0, text.length - 1)
+      : fullText.substring(0, text.length + 1);
+
+    setText(updatedText);
+
+    if (isDeleting) {
+      setDelta(prevDelta => prevDelta / 2);
+    }
+
+    if (!isDeleting && updatedText === fullText) {
+      setIsDeleting(true);
+      setDelta(period);
+    } else if (isDeleting && updatedText === '') {
+      setIsDeleting(false);
+      setLoopNum(loopNum + 1);
+      setDelta(500);
+    }
+  };
+
+  React.useEffect(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+        }
+    timeoutRef.current = setTimeout(tick, delta);
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+  };
+  }, [text, delta, isDeleting, loopNum, toRotate, period]);
+
+  return (
+    <span className="txt-rotate">
+      <span className="wrap">{text}</span>
+    </span>
+  );
+};
+
+// Helper to clean AI message (remove hashtags/headers)
+function cleanAIMessage(content: string) {
+  // Remove markdown headers and hashtags
+  return content.replace(/^#+\s*/gm, '').replace(/#/g, '').trim();
+}
+
+const ALLOWED_EMAILS = [
+  'student1@example.com',
+  'student2@example.com',
+  'student3@example.com',
+];
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const router = useRouter();
+  const [distort, setDistort] = useState(false);
+  const [isParticleTransitioning, setIsParticleTransitioning] = useState(false);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+  const handleStartChat = () => {
+    router.push('/register');
+  };
+
+  const handleGoHome = () => {
+    setIsTransitioning(true);
+    setTimeout(() => {
+      setIsTransitioning(false);
+    }, 1500);
+  };
+
+  return (
+    <main className={`min-h-screen relative overflow-hidden tech-grid-bg${isParticleTransitioning ? ' zoom-rapid' : ''}`}>
+      <CircleTransition 
+        isTransitioning={isTransitioning} 
+        onTransitionComplete={() => setIsTransitioning(false)} 
+      />
+      <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+        <h1 className="text-6xl font-bold mb-4 text-white">
+          TSa
+          <TxtRotate
+            toRotate={[
+              ' is innovative',
+              ' is powerful',
+              ' is creative',
+              ' is efficient',
+              ' is modern',
+              ' is beautiful',
+            ]}
+            period={2000}
+              />
+        </h1>
+                <button
+          onClick={handleStartChat}
+          className={`shimmer-spark-btn mt-8 px-8 py-3 rounded-full text-white relative`}
         >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+          <span className="spark__container">
+            <span className="spark"></span>
+          </span>
+          <span className="backdrop"></span>
+          <span className="text">Start Chatting</span>
+        </button>
+      </div>
+      <Navigation onHomeClick={handleGoHome} />
+    </main>
   );
 }
+
+// Add this to your global CSS if not present:
+// .loader { border-width: 2px; border-style: solid; border-radius: 9999px; width: 1.25rem; height: 1.25rem; border-color: #60a5fa transparent transparent transparent; animation: spin 1s linear infinite; }
+// @keyframes spin { 100% { transform: rotate(360deg); } }
+// @keyframes bounce-in { 0% { transform: scale(1.2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
