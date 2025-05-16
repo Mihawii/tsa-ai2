@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback, Suspense } from 'react';
 import { useRouter } from 'next/navigation';
-import { FiUser, FiBriefcase, FiSend, FiImage, FiMic, FiMicOff, FiPlus, FiChevronDown, FiTrash2 } from 'react-icons/fi';
+import { FiPlus, FiChevronDown, FiTrash2 } from 'react-icons/fi';
 import Navigation from '@/components/Navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
@@ -33,21 +33,6 @@ interface Conversation {
   createdAt: number;
 }
 
-const ALLOWED_EMAILS = [
-  'student1@example.com',
-  'student2@example.com',
-  'student3@example.com',
-  'aerthea.branch@gmail.com',
-  'sia.kotkar2007@gmail.com',
-  'mustangir393@gmail.com',
-  'sakan.ayanat@gmail.com',
-  'akarshagoel2008@gmail.com',
-  'jariwalaavya@gmail.com',
-  'ibrohimabdullaev020@gmail.com',
-  'isroilovsardor2009@gmail.com',
-  'bekeeva0608@icloud.com',
-];
-
 const SUGGESTIONS = [
   "What's trending in AI?",
   "How do I raise funding?",
@@ -56,10 +41,6 @@ const SUGGESTIONS = [
   "How to scale my product?",
   "What are top VC funds?"
 ];
-
-function cleanAIMessage(content: string) {
-  return content.replace(/^#+\s*/gm, '').replace(/#/g, '').trim();
-}
 
 function formatAIMessage(content: string) {
   const paragraphs = content.split(/\n\n|(?<=[.!?])\s+(?=[A-Z])/g);
@@ -135,16 +116,6 @@ export default function ChatPage() {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  // Authorization check
-  useEffect(() => {
-    if (!isMounted) return;
-    
-    const email = localStorage.getItem('ai_student_email');
-    if (!email || !ALLOWED_EMAILS.includes(email)) {
-      router.replace('/register');
-    }
-  }, [router, isMounted]);
 
   // Image upload
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -631,7 +602,7 @@ export default function ChatPage() {
                           {message.type === 'image' && message.imageUrl && (
                             <img src={message.imageUrl} alt="Uploaded" className="max-w-full rounded-lg mb-2" />
                           )}
-                          {isUser ? formatMessage(message.content) : formatAIMessage(cleanAIMessage(message.content))}
+                          {isUser ? formatMessage(message.content) : formatAIMessage(message.content)}
                           {message.reasoning && (
                             <motion.div
                               initial={{ height: 0, opacity: 0 }}
@@ -650,14 +621,6 @@ export default function ChatPage() {
                         </>
                       )}
                     </div>
-                    {/* User Avatar */}
-                    {isUser && (
-                      <div className="flex ml-2 self-end" style={{ alignSelf: 'flex-end' }}>
-                        <div className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center">
-                          <FiUser className="w-5 h-5 text-white" />
-                        </div>
-                      </div>
-                    )}
                   </div>
                 );
               })}
@@ -717,36 +680,13 @@ export default function ChatPage() {
                   accept="image/*"
                   className="hidden"
                 />
-                <motion.button
-                  whileHover={{ scale: 1.08, boxShadow: '0 2px 16px 0 #e93e1e33' }}
-                  whileTap={{ scale: 0.97 }}
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="glass-btn bg-gradient-to-br from-[#e93e1e]/30 to-white/10 text-white rounded-full p-2 hover:from-[#e93e1e]/60 hover:to-white/20 transition-colors border border-white/10 shadow-lg flex items-center justify-center"
-                >
-                  <FiImage className="w-5 h-5" />
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.08, boxShadow: '0 2px 16px 0 #e93e1e33' }}
-                  whileTap={{ scale: 0.97 }}
-                  type="button"
-                  onClick={isRecording ? stopRecording : startRecording}
-                  className={clsx(
-                    'glass-btn rounded-full p-2 transition-colors border border-white/10 shadow-lg flex items-center justify-center',
-                    isRecording ? 'bg-red-500/80 hover:bg-red-500' : 'bg-gradient-to-br from-[#e93e1e]/30 to-white/10 text-white hover:from-[#e93e1e]/60 hover:to-white/20'
-                  )}
-                >
-                  {isRecording ? <FiMicOff className="w-5 h-5" /> : <FiMic className="w-5 h-5" />}
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.08, boxShadow: '0 2px 16px 0 #e93e1e33' }}
-                  whileTap={{ scale: 0.97 }}
+                <button
                   type="submit"
                   disabled={isLoading}
                   className="glass-btn bg-gradient-to-br from-[#e93e1e] to-orange-400 text-white rounded-full p-2 hover:from-[#e93e1e]/80 hover:to-orange-400/80 transition-colors disabled:opacity-50 border border-white/10 shadow-lg flex items-center justify-center"
                 >
-                  <FiSend className="w-5 h-5" />
-                </motion.button>
+                  Send
+                </button>
               </form>
             </div>
           </div>

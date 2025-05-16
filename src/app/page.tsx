@@ -2,17 +2,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { FiHome, FiShare2, FiPlus, FiMessageCircle, FiZap, FiBookOpen, FiUser, FiTrendingUp, FiSend, FiImage, FiMic, FiMicOff, FiBriefcase } from 'react-icons/fi';
+import { FiHome, FiShare2, FiPlus, FiMessageCircle, FiZap } from 'react-icons/fi';
 import Navigation from '@/components/Navigation';
 import CircleTransition from '@/components/CircleTransition';
-
-interface ChatMessage {
-  role: 'user' | 'ai';
-  content: string;
-  type?: 'text' | 'image';
-  imageUrl?: string;
-  timestamp?: number;
-}
 
 interface TxtRotateProps {
   toRotate: string[];
