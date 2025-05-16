@@ -13,7 +13,6 @@ const ALLOWED_EMAILS = [
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
-  const [animateIn, setAnimateIn] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,10 +26,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <main
-      className={`min-h-screen flex flex-col items-center justify-center relative overflow-hidden tech-grid-bg${animateIn ? ' bounce-back-in' : ''}`}
-      style={!animateIn ? { transform: 'perspective(900px) scale(1.18) translateZ(60px)' } : {}}
-    >
+    <main className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden tech-grid-bg">
       <div className="frosted-glass-bubble max-w-md w-full flex flex-col items-center p-10">
         <h2 className="text-3xl font-bold mb-6 font-mori text-white tracking-wide">Student Registration</h2>
         <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">

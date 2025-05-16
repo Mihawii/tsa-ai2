@@ -65,20 +65,9 @@ export default function Home() {
     router.push('/register');
   };
 
-  const handleGoHome = () => {
-    setIsTransitioning(true);
-    setTimeout(() => {
-      setIsTransitioning(false);
-    }, 1500);
-  };
-
   return (
-    <main className={`min-h-screen relative overflow-hidden tech-grid-bg`}>
-      {/* <CircleTransition 
-        isTransitioning={isTransitioning} 
-        onTransitionComplete={() => setIsTransitioning(false)} 
-      /> */}
-      <div className={`relative z-10 min-h-screen flex flex-col items-center justify-center transition-opacity duration-500 ${isTransitioning ? 'opacity-0' : 'opacity-100'}`}>
+    <main className="min-h-screen relative overflow-hidden tech-grid-bg">
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center transition-opacity duration-500">
         <h1 className="text-6xl font-bold mb-4 text-white">
           TSa
           <TxtRotate
@@ -91,11 +80,11 @@ export default function Home() {
               ' is beautiful',
             ]}
             period={2000}
-              />
+          />
         </h1>
-                <button
+        <button
           onClick={handleStartChat}
-          className={`shimmer-spark-btn mt-8 px-8 py-3 rounded-full text-white relative`}
+          className="shimmer-spark-btn mt-8 px-8 py-3 rounded-full text-white relative"
         >
           <span className="spark__container">
             <span className="spark"></span>
@@ -104,12 +93,6 @@ export default function Home() {
           <span className="text">Start Chatting</span>
         </button>
       </div>
-      {/* <Navigation onHomeClick={handleGoHome} /> */}
     </main>
   );
 }
-
-// Add this to your global CSS if not present:
-// .loader { border-width: 2px; border-style: solid; border-radius: 9999px; width: 1.25rem; height: 1.25rem; border-color: #60a5fa transparent transparent transparent; animation: spin 1s linear infinite; }
-// @keyframes spin { 100% { transform: rotate(360deg); } }
-// @keyframes bounce-in { 0% { transform: scale(1.2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
