@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
 
+// Define a type for conversation messages
+type ConversationMessage = { role: string; content: string };
+
 // Input validation
 function validateInput(message: string): { isValid: boolean; error?: string } {
   if (!message || typeof message !== 'string') {
@@ -20,7 +23,7 @@ export async function POST(req: NextRequest) {
     let body;
     try {
       body = await req.json();
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { error: 'Invalid JSON in request body' },
         { status: 400 }
@@ -49,9 +52,9 @@ export async function POST(req: NextRequest) {
     // Build conversation context string (excluding the current message)
     let conversationContext = '';
     if (Array.isArray(conversation) && conversation.length > 0) {
-      conversationContext = conversation
-        .filter((msg: unknown) => typeof msg === 'object' && msg !== null && (msg as any).role && (msg as any).content && (msg as any).role !== 'ai' && (msg as any).content !== message)
-        .map((msg: unknown) => `${(msg as any).role === 'user' ? 'User' : 'AI'}: ${(msg as any).content}`)
+      conversationContext = (conversation as ConversationMessage[])
+        .filter((msg) => msg.role && msg.content && msg.role !== 'ai' && msg.content !== message)
+        .map((msg) => `${msg.role === 'user' ? 'User' : 'AI'}: ${msg.content}`)
         .join('\n');
     }
 
