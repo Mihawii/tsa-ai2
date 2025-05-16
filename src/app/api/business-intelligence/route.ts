@@ -47,14 +47,14 @@ export async function POST(req: Request) {
     let body;
     try {
       body = await req.json();
-    } catch (error) {
+    } catch {
       return NextResponse.json(
         { error: 'Invalid JSON in request body' },
         { status: 400 }
       );
     }
 
-    const { query, context } = body;
+    const { query } = body;
 
     // Validate input
     const validation = validateInput(query);
@@ -89,16 +89,16 @@ export async function POST(req: Request) {
     }
 
     // 2. Enrich with real-time market data
-    const marketData = await fetchMarketData(query);
+    const marketData = await fetchMarketData();
 
     // 3. Get startup ecosystem insights
-    const startupInsights = await getStartupInsights(query);
+    const startupInsights = await getStartupInsights();
 
     // 4. Get technology trends
-    const technologyTrends = await getTechnologyTrends(query);
+    const technologyTrends = await getTechnologyTrends();
 
     // 5. Get innovation insights
-    const innovationInsights = await getInnovationInsights(query);
+    const innovationInsights = await getInnovationInsights();
 
     // 6. Compile comprehensive business context
     const businessContext: BusinessContext = {
@@ -165,7 +165,7 @@ export async function POST(req: Request) {
 }
 
 // Helper function to fetch market data
-async function fetchMarketData(query: string) {
+async function fetchMarketData() {
   try {
     // Implement Alpha Vantage API integration
     const ALPHA_VANTAGE_API_KEY = process.env.ALPHA_VANTAGE_API_KEY;
@@ -177,14 +177,14 @@ async function fetchMarketData(query: string) {
       industryMetrics: "Tech sector showing 15% YoY growth",
       marketSize: "Global AI market expected to reach $1.5T by 2030"
     };
-  } catch (error) {
-    console.warn('Failed to fetch market data:', error);
+  } catch {
+    console.warn('Failed to fetch market data');
     return {};
   }
 }
 
 // Helper function to get startup insights
-async function getStartupInsights(query: string) {
+async function getStartupInsights() {
   try {
     // Implement startup ecosystem data fetching
     return {
@@ -192,36 +192,36 @@ async function getStartupInsights(query: string) {
       successMetrics: "Average time to Series A: 18 months",
       marketOpportunities: "Enterprise AI solutions showing strong growth"
     };
-  } catch (error) {
-    console.warn('Failed to fetch startup insights:', error);
+  } catch {
+    console.warn('Failed to fetch startup insights');
     return {};
   }
 }
 
 // Helper function to get technology trends
-async function getTechnologyTrends(query: string) {
+async function getTechnologyTrends() {
   try {
     return {
       emergingTech: ["AI/ML", "Quantum Computing", "Edge Computing"],
       adoptionRates: "Enterprise AI adoption up 35% YoY",
       innovationAreas: "Sustainable Tech, HealthTech, FinTech"
     };
-  } catch (error) {
-    console.warn('Failed to fetch technology trends:', error);
+  } catch {
+    console.warn('Failed to fetch technology trends');
     return {};
   }
 }
 
 // Helper function to get innovation insights
-async function getInnovationInsights(query: string) {
+async function getInnovationInsights() {
   try {
     return {
       breakthroughAreas: ["AI-driven automation", "Sustainable solutions"],
       innovationMetrics: "R&D spending up 20% in tech sector",
       futureTrends: "Convergence of AI, IoT, and Blockchain"
     };
-  } catch (error) {
-    console.warn('Failed to fetch innovation insights:', error);
+  } catch {
+    console.warn('Failed to fetch innovation insights');
     return {};
   }
 } 

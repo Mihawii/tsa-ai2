@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback, Suspense } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { FiPlus, FiChevronDown, FiTrash2 } from 'react-icons/fi';
-import Navigation from '@/components/Navigation';
+import { FiPlus, FiTrash2 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import clsx from 'clsx';
 import dynamic from 'next/dynamic';
-import KoiFish from '@/components/KoiFish';
 
 // Dynamically import components that might cause SSR issues
 const DynamicNavigation = dynamic(() => import('@/components/Navigation'), {
@@ -100,13 +98,9 @@ export default function ChatPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const audioChunksRef = useRef<Blob[]>([]);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const [showScrollToBottom, setShowScrollToBottom] = useState(false);
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [dashboardOpen, setDashboardOpen] = useState(false);
@@ -127,34 +121,6 @@ export default function ChatPage() {
         setMessages(prev => [...prev, { role: 'user', content: 'Sent an image', type: 'image', imageUrl, timestamp: Date.now() }]);
       };
       reader.readAsDataURL(file);
-    }
-  };
-
-  // Voice recording
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      audioChunksRef.current = [];
-      mediaRecorder.ondataavailable = (event) => {
-        audioChunksRef.current.push(event.data);
-      };
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
-        const audioUrl = URL.createObjectURL(audioBlob);
-        setMessages(prev => [...prev, { role: 'user', content: 'Voice message', type: 'text', timestamp: Date.now() }]);
-      };
-      mediaRecorder.start();
-      setIsRecording(true);
-    } catch (error) {
-      console.error('Error accessing microphone:', error);
-    }
-  };
-  const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
     }
   };
 
