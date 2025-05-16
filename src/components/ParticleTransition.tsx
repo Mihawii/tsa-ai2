@@ -115,14 +115,19 @@ const ParticleTransition: React.FC<ParticleTransitionProps> = ({ isTransitioning
         positions.needsUpdate = true;
 
         if (particlesRef.current) {
-          particlesRef.current.material.opacity -= 0.02;
+          const material = particlesRef.current.material;
+          if (material instanceof THREE.PointsMaterial) {
+            material.opacity -= 0.02;
+            if (material.opacity > 0) {
+              requestAnimationFrame(animateOut);
+            } else {
+              onTransitionComplete();
+            }
+            return;
+          }
         }
-
-        if (particlesRef.current && particlesRef.current.material.opacity > 0) {
-          requestAnimationFrame(animateOut);
-        } else {
-          onTransitionComplete();
-        }
+        // If not PointsMaterial, just call onTransitionComplete
+        onTransitionComplete();
       };
 
       animateOut();
