@@ -553,36 +553,75 @@ export default function ChatPage() {
                       </div>
                     )}
                     {/* Plain message text */}
-                    <div
-                      className="plain-message-text"
-                      style={{ fontFamily: 'DM Serif Display, serif', fontSize: '1.08rem', color: isUser ? '#fff' : '#b0b3bb', fontWeight: 500, maxWidth: '70%' }}
-                    >
-                      {message.isThinking ? (
-                        <span className="reasoning-animated-strong">Reasoning</span>
-                      ) : (
-                        <>
-                          {message.type === 'image' && message.imageUrl && (
-                            <img src={message.imageUrl} alt="Uploaded" className="max-w-full rounded-lg mb-2" />
-                          )}
-                          {isUser ? formatMessage(message.content) : formatAIMessage(message.content)}
-                          {message.reasoning && (
-                            <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: 'auto', opacity: 1 }}
-                              className="mt-2 pt-2 text-xs text-gray-400"
-                            >
-                              <details>
-                                <summary className="cursor-pointer hover:text-white/80">View reasoning</summary>
-                                <div className="mt-2 whitespace-pre-line">{message.reasoning}</div>
-                              </details>
-                            </motion.div>
-                          )}
-                          <div className="glass-timestamp" style={{ color: '#888', textAlign: 'right', fontSize: '0.7rem', marginTop: '0.2em' }}>
-                            {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
-                          </div>
-                        </>
-                      )}
-                    </div>
+                    {isUser ? (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="plain-message-text"
+                        style={{ fontFamily: 'DM Serif Display, serif', fontSize: '1.08rem', color: '#fff', fontWeight: 500, maxWidth: '70%' }}
+                      >
+                        {message.isThinking ? (
+                          <span className="reasoning-animated-strong">Reasoning</span>
+                        ) : (
+                          <>
+                            {message.type === 'image' && message.imageUrl && (
+                              <img src={message.imageUrl} alt="Uploaded" className="max-w-full rounded-lg mb-2" />
+                            )}
+                            {formatMessage(message.content)}
+                            {message.reasoning && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                className="mt-2 pt-2 text-xs text-gray-400"
+                              >
+                                <details>
+                                  <summary className="cursor-pointer hover:text-white/80">View reasoning</summary>
+                                  <div className="mt-2 whitespace-pre-line">{message.reasoning}</div>
+                                </details>
+                              </motion.div>
+                            )}
+                            <div className="glass-timestamp" style={{ color: '#888', textAlign: 'right', fontSize: '0.7rem', marginTop: '0.2em' }}>
+                              {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
+                            </div>
+                          </>
+                        )}
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="plain-message-text"
+                        style={{ fontFamily: 'DM Serif Display, serif', fontSize: '1.08rem', color: '#b0b3bb', fontWeight: 500, maxWidth: '70%' }}
+                      >
+                        {message.isThinking ? (
+                          <span className="reasoning-animated-strong">Reasoning</span>
+                        ) : (
+                          <>
+                            {message.type === 'image' && message.imageUrl && (
+                              <img src={message.imageUrl} alt="Uploaded" className="max-w-full rounded-lg mb-2" />
+                            )}
+                            {formatAIMessage(message.content)}
+                            {message.reasoning && (
+                              <motion.div
+                                initial={{ height: 0, opacity: 0 }}
+                                animate={{ height: 'auto', opacity: 1 }}
+                                className="mt-2 pt-2 text-xs text-gray-400"
+                              >
+                                <details>
+                                  <summary className="cursor-pointer hover:text-white/80">View reasoning</summary>
+                                  <div className="mt-2 whitespace-pre-line">{message.reasoning}</div>
+                                </details>
+                              </motion.div>
+                            )}
+                            <div className="glass-timestamp" style={{ color: '#888', textAlign: 'right', fontSize: '0.7rem', marginTop: '0.2em' }}>
+                              {message.timestamp ? new Date(message.timestamp).toLocaleTimeString() : ''}
+                            </div>
+                          </>
+                        )}
+                      </motion.div>
+                    )}
                   </div>
                 );
               })}
