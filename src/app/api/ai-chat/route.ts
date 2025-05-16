@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Accept conversation array for adaptive context
-    const { message, format, businessContext, conversation } = body;
+    const { message, businessContext, conversation } = body;
 
     // Validate input
     const validation = validateInput(message);
@@ -50,8 +50,8 @@ export async function POST(req: NextRequest) {
     let conversationContext = '';
     if (Array.isArray(conversation) && conversation.length > 0) {
       conversationContext = conversation
-        .filter((msg: any) => msg.role && msg.content && msg.role !== 'ai' && msg.content !== message)
-        .map((msg: any) => `${msg.role === 'user' ? 'User' : 'AI'}: ${msg.content}`)
+        .filter((msg: unknown) => typeof msg === 'object' && msg !== null && (msg as any).role && (msg as any).content && (msg as any).role !== 'ai' && (msg as any).content !== message)
+        .map((msg: unknown) => `${(msg as any).role === 'user' ? 'User' : 'AI'}: ${(msg as any).content}`)
         .join('\n');
     }
 

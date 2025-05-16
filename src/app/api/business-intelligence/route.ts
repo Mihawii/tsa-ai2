@@ -20,13 +20,13 @@ interface BusinessKnowledge {
 
 // Enhanced context for business queries
 interface BusinessContext {
-  marketData?: any;
-  startupInsights?: any;
-  financialMetrics?: any;
-  legalConsiderations?: any;
-  strategyRecommendations?: any;
-  technologyTrends?: any;
-  innovationInsights?: any;
+  marketData?: unknown;
+  startupInsights?: unknown;
+  financialMetrics?: unknown;
+  legalConsiderations?: unknown;
+  strategyRecommendations?: unknown;
+  technologyTrends?: unknown;
+  innovationInsights?: unknown;
   knowledgeBase?: BusinessKnowledge[];
 }
 
