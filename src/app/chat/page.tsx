@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { FiPlus, FiTrash2 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -112,6 +112,26 @@ function AnimatedAIMessage({ content }: { content: string }) {
   return <span>{displayed}</span>;
 }
 
+// --- Remade Typing Panel and AI Message Animation ---
+import { useState } from 'react';
+
+function WordByWordAIMessage({ content }: { content: string }) {
+  const [displayed, setDisplayed] = useState<string[]>([]);
+  const words = content.split(/(\s+)/);
+  useEffect(() => {
+    setDisplayed([]);
+    if (!content) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayed(words.slice(0, i + 1));
+      i++;
+      if (i >= words.length) clearInterval(interval);
+    }, 80); // ~12 words/sec
+    return () => clearInterval(interval);
+  }, [content]);
+  return <span>{displayed.join('')}</span>;
+}
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -125,6 +145,7 @@ export default function ChatPage() {
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const chatEndRef = useRef<HTMLDivElement>(null);
 
   // Ensure client-side only code
   useEffect(() => {
@@ -493,6 +514,12 @@ export default function ChatPage() {
     );
   }
 
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, isLoading]);
+
   if (!isMounted) {
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-black/90">
@@ -661,7 +688,7 @@ export default function ChatPage() {
                         {message.isThinking ? (
                           <span className="reasoning-animated-strong">Reasoning</span>
                         ) : isLatestAI ? (
-                          <AnimatedAIMessage content={message.content} />
+                          <WordByWordAIMessage content={message.content} />
                         ) : (
                           <>
                             {message.type === 'image' && message.imageUrl && (
@@ -736,8 +763,8 @@ export default function ChatPage() {
           {/* Input bar: glassy, floating, visually consistent with bubbles */}
           <div className="w-full flex justify-center mb-20">
             <div className="w-full max-w-3xl mx-auto">
-              <form onSubmit={handleSubmit} className="frosted-chat-input">
-                <label htmlFor="image-upload" className="frosted-icon-btn" title="Attach image">
+              <form onSubmit={handleSubmit} className="frosted-chat-input-remake">
+                <label htmlFor="image-upload" className="frosted-icon-btn-remake" title="Attach image">
                   <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="M7 14l3-3 2 2 3-3"/></svg>
                   <input
                     id="image-upload"
@@ -753,21 +780,21 @@ export default function ChatPage() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Type your message..."
-                  className="frosted-input"
+                  className="frosted-input-remake"
                 />
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="frosted-icon-btn"
+                  className="frosted-icon-btn-remake"
                   title="Send"
                 >
                   <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 </button>
               </form>
               {selectedImage && (
-                <div className="frosted-image-preview">
+                <div className="frosted-image-preview-remake">
                   <img src={selectedImage} alt="Preview" />
-                  <button className="frosted-remove-image" onClick={() => setSelectedImage(null)} title="Remove image">✕</button>
+                  <button className="frosted-remove-image-remake" onClick={() => setSelectedImage(null)} title="Remove image">✕</button>
                 </div>
               )}
             </div>
@@ -801,98 +828,98 @@ export default function ChatPage() {
 */
 
 <style jsx>{`
-  .frosted-chat-input {
+  .frosted-chat-input-remake {
     display: flex;
     align-items: center;
-    gap: 0.7em;
-    background: rgba(255,255,255,0.18);
-    border-radius: 2.5em;
-    box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
-    border: 1.5px solid rgba(255,255,255,0.22);
-    backdrop-filter: blur(18px) saturate(160%);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
-    padding: 0.7em 1.3em;
-    margin: 0.5em 0;
+    gap: 1em;
+    background: rgba(255,255,255,0.22);
+    border-radius: 2.7em;
+    box-shadow: 0 12px 40px 0 rgba(31,38,135,0.18);
+    border: 1.5px solid rgba(255,255,255,0.28);
+    backdrop-filter: blur(22px) saturate(180%);
+    -webkit-backdrop-filter: blur(22px) saturate(180%);
+    padding: 1em 1.7em;
+    margin: 0.7em 0;
     position: relative;
   }
-  .frosted-input {
+  .frosted-input-remake {
     flex: 1;
     background: none;
     border: none;
     outline: none;
     color: #fff;
-    font-size: 1.18rem;
-    padding: 0.7em 1em;
-    border-radius: 2em;
+    font-size: 1.22rem;
+    padding: 0.9em 1.2em;
+    border-radius: 2.2em;
     font-family: 'DM Serif Display', serif;
     letter-spacing: 0.01em;
     transition: background 0.2s;
   }
-  .frosted-input::placeholder {
+  .frosted-input-remake::placeholder {
     color: #fff9;
     font-weight: 400;
     opacity: 0.7;
   }
-  .frosted-icon-btn {
-    background: rgba(255,255,255,0.13);
+  .frosted-icon-btn-remake {
+    background: rgba(255,255,255,0.16);
     border: none;
     border-radius: 50%;
-    width: 2.6em;
-    height: 2.6em;
+    width: 2.8em;
+    height: 2.8em;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #e93e1e;
-    font-size: 1.3rem;
+    font-size: 1.4rem;
     cursor: pointer;
     transition: background 0.18s, color 0.18s, box-shadow 0.18s;
     box-shadow: 0 2px 8px 0 rgba(233,62,30,0.08);
     margin: 0 0.1em;
   }
-  .frosted-icon-btn:disabled {
+  .frosted-icon-btn-remake:disabled {
     opacity: 0.5;
     cursor: not-allowed;
   }
-  .frosted-icon-btn:hover, .frosted-icon-btn:focus {
-    background: rgba(233,62,30,0.13);
+  .frosted-icon-btn-remake:hover, .frosted-icon-btn-remake:focus {
+    background: rgba(233,62,30,0.16);
     color: #fff;
     box-shadow: 0 4px 16px 0 rgba(233,62,30,0.13);
   }
-  .frosted-image-preview {
+  .frosted-image-preview-remake {
     display: flex;
     align-items: center;
-    gap: 0.5em;
-    margin-top: 0.5em;
-    background: rgba(255,255,255,0.13);
-    border-radius: 1em;
-    padding: 0.4em 0.8em;
+    gap: 0.7em;
+    margin-top: 0.7em;
+    background: rgba(255,255,255,0.16);
+    border-radius: 1.2em;
+    padding: 0.5em 1em;
     box-shadow: 0 2px 8px 0 rgba(233,62,30,0.08);
     border: 1.5px solid #e93e1e33;
-    max-width: 220px;
+    max-width: 240px;
   }
-  .frosted-image-preview img {
-    max-width: 90px;
-    max-height: 60px;
-    border-radius: 0.5em;
+  .frosted-image-preview-remake img {
+    max-width: 100px;
+    max-height: 70px;
+    border-radius: 0.7em;
     border: 1.5px solid #e93e1e;
     box-shadow: 0 2px 8px 0 rgba(233,62,30,0.10);
   }
-  .frosted-remove-image {
+  .frosted-remove-image-remake {
     background: #e93e1e;
     color: #fff;
     border: none;
     border-radius: 50%;
-    width: 22px;
-    height: 22px;
-    font-size: 1.1rem;
+    width: 26px;
+    height: 26px;
+    font-size: 1.2rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-left: 0.3em;
+    margin-left: 0.4em;
     transition: background 0.18s;
   }
-  .frosted-remove-image:hover, .frosted-remove-image:focus {
+  .frosted-remove-image-remake:hover, .frosted-remove-image-remake:focus {
     background: #ff6b4a;
   }
 `}</style> 
