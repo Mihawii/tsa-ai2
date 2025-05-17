@@ -92,6 +92,9 @@ function createNewConversation(initialMessage: ChatMessage): Conversation {
   };
 }
 
+// At the top of ChatPage, get the user's email from localStorage
+const userEmail = typeof window !== 'undefined' ? localStorage.getItem('ai_student_email') : null;
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -301,19 +304,21 @@ export default function ChatPage() {
     }
   };
 
-  // Save conversations to localStorage
+  // Update saveConversations and load logic to use userEmail as the key
   const saveConversations = (convs: Conversation[]) => {
-    localStorage.setItem('ai_conversations', JSON.stringify(convs.slice(-50)));
+    if (userEmail) {
+      localStorage.setItem(`ai_conversations_${userEmail}`, JSON.stringify(convs.slice(-50)));
+    }
   };
 
   // Load conversations from localStorage
   useEffect(() => {
-    if (!isMounted) return;
-    const stored = localStorage.getItem('ai_conversations');
+    if (!isMounted || !userEmail) return;
+    const stored = localStorage.getItem(`ai_conversations_${userEmail}`);
     if (stored) {
       setConversations(JSON.parse(stored));
     }
-  }, [isMounted]);
+  }, [isMounted, userEmail]);
 
   // Track if user has started a conversation
   useEffect(() => {
@@ -434,6 +439,42 @@ export default function ChatPage() {
       return updated;
     });
   };
+
+  // Add TypingIndicator component
+  function TypingIndicator() {
+    return (
+      <div className="ai-typing-indicator">
+        <span className="dot" />
+        <span className="dot" />
+        <span className="dot" />
+        <style jsx>{`
+          .ai-typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.2em;
+            margin: 0.5em 0 0.5em 0.5em;
+          }
+          .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #e93e1e;
+            animation: bounce 1.2s infinite both;
+          }
+          .dot:nth-child(2) {
+            animation-delay: 0.2s;
+          }
+          .dot:nth-child(3) {
+            animation-delay: 0.4s;
+          }
+          @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0.8); opacity: 0.7; }
+            40% { transform: scale(1.2); opacity: 1; }
+          }
+        `}</style>
+      </div>
+    );
+  }
 
   if (!isMounted) {
     return (
@@ -625,6 +666,11 @@ export default function ChatPage() {
                   </div>
                 );
               })}
+              {isLoading && (
+                <div className="w-full flex justify-start my-2 items-end">
+                  <TypingIndicator />
+                </div>
+              )}
             </div>
           </div>
           {/* Suggestions row: fade out after first user message */}
