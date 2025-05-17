@@ -736,9 +736,9 @@ export default function ChatPage() {
           {/* Input bar: glassy, floating, visually consistent with bubbles */}
           <div className="w-full flex justify-center mb-20">
             <div className="w-full max-w-3xl mx-auto">
-              <form onSubmit={handleSubmit} className="flex gap-2 items-center modern-chat-input glass-bubble bg-white/10 backdrop-blur-lg rounded-full px-4 py-2 border border-white/20 shadow-xl" style={{ background: 'rgba(255,255,255,0.08)' }}>
-                <label htmlFor="image-upload" className="image-upload-btn">
-                  📎
+              <form onSubmit={handleSubmit} className="frosted-chat-input">
+                <label htmlFor="image-upload" className="frosted-icon-btn" title="Attach image">
+                  <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="M7 14l3-3 2 2 3-3"/></svg>
                   <input
                     id="image-upload"
                     type="file"
@@ -753,20 +753,21 @@ export default function ChatPage() {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Type your message..."
-                  className="flex-1 bg-transparent text-white placeholder-white/50 focus:outline-none border-none shadow-none modern-input"
+                  className="frosted-input"
                 />
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="modern-send-btn glass-btn bg-gradient-to-br from-[#e93e1e] to-orange-400 text-white rounded-full p-2 hover:from-[#e93e1e]/80 hover:to-orange-400/80 transition-colors disabled:opacity-50 border border-white/10 shadow-lg flex items-center justify-center"
+                  className="frosted-icon-btn"
+                  title="Send"
                 >
-                  ➤
+                  <svg width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                 </button>
               </form>
               {selectedImage && (
-                <div className="image-preview-container">
-                  <img src={selectedImage} alt="Preview" className="image-preview" />
-                  <button className="remove-image-btn" onClick={() => setSelectedImage(null)}>✕</button>
+                <div className="frosted-image-preview">
+                  <img src={selectedImage} alt="Preview" />
+                  <button className="frosted-remove-image" onClick={() => setSelectedImage(null)} title="Remove image">✕</button>
                 </div>
               )}
             </div>
@@ -800,66 +801,98 @@ export default function ChatPage() {
 */
 
 <style jsx>{`
-  .modern-chat-input {
-    background: rgba(255,255,255,0.13);
-    border-radius: 2rem;
-    box-shadow: 0 2px 16px 0 rgba(233,62,30,0.10);
-    border: 1.5px solid rgba(233,62,30,0.22);
-    padding: 0.5em 1em;
+  .frosted-chat-input {
+    display: flex;
     align-items: center;
+    gap: 0.7em;
+    background: rgba(255,255,255,0.18);
+    border-radius: 2.5em;
+    box-shadow: 0 8px 32px 0 rgba(31,38,135,0.18);
+    border: 1.5px solid rgba(255,255,255,0.22);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    padding: 0.7em 1.3em;
+    margin: 0.5em 0;
+    position: relative;
   }
-  .modern-input {
-    font-size: 1.1rem;
-    padding: 0.7em 1em;
-    border-radius: 1.5rem;
-    background: none;
-    color: #fff;
-  }
-  .modern-send-btn {
-    font-size: 1.5rem;
-    padding: 0.5em 1em;
-    border-radius: 50%;
-    background: linear-gradient(90deg, #e93e1e 70%, #ff6b4a 100%);
-    color: #fff;
-    border: none;
-    box-shadow: 0 2px 8px 0 rgba(233,62,30,0.10);
-    transition: background 0.2s, box-shadow 0.2s;
-  }
-  .image-upload-btn {
-    cursor: pointer;
-    font-size: 1.3rem;
-    margin-right: 0.5em;
-    color: #e93e1e;
+  .frosted-input {
+    flex: 1;
     background: none;
     border: none;
     outline: none;
+    color: #fff;
+    font-size: 1.18rem;
+    padding: 0.7em 1em;
+    border-radius: 2em;
+    font-family: 'DM Serif Display', serif;
+    letter-spacing: 0.01em;
+    transition: background 0.2s;
+  }
+  .frosted-input::placeholder {
+    color: #fff9;
+    font-weight: 400;
+    opacity: 0.7;
+  }
+  .frosted-icon-btn {
+    background: rgba(255,255,255,0.13);
+    border: none;
+    border-radius: 50%;
+    width: 2.6em;
+    height: 2.6em;
     display: flex;
     align-items: center;
+    justify-content: center;
+    color: #e93e1e;
+    font-size: 1.3rem;
+    cursor: pointer;
+    transition: background 0.18s, color 0.18s, box-shadow 0.18s;
+    box-shadow: 0 2px 8px 0 rgba(233,62,30,0.08);
+    margin: 0 0.1em;
   }
-  .image-preview-container {
-    margin-top: 0.5em;
+  .frosted-icon-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  .frosted-icon-btn:hover, .frosted-icon-btn:focus {
+    background: rgba(233,62,30,0.13);
+    color: #fff;
+    box-shadow: 0 4px 16px 0 rgba(233,62,30,0.13);
+  }
+  .frosted-image-preview {
     display: flex;
     align-items: center;
     gap: 0.5em;
+    margin-top: 0.5em;
+    background: rgba(255,255,255,0.13);
+    border-radius: 1em;
+    padding: 0.4em 0.8em;
+    box-shadow: 0 2px 8px 0 rgba(233,62,30,0.08);
+    border: 1.5px solid #e93e1e33;
+    max-width: 220px;
   }
-  .image-preview {
-    max-width: 120px;
-    max-height: 80px;
+  .frosted-image-preview img {
+    max-width: 90px;
+    max-height: 60px;
     border-radius: 0.5em;
     border: 1.5px solid #e93e1e;
     box-shadow: 0 2px 8px 0 rgba(233,62,30,0.10);
   }
-  .remove-image-btn {
+  .frosted-remove-image {
     background: #e93e1e;
     color: #fff;
     border: none;
     border-radius: 50%;
-    width: 24px;
-    height: 24px;
+    width: 22px;
+    height: 22px;
     font-size: 1.1rem;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-left: 0.3em;
+    transition: background 0.18s;
+  }
+  .frosted-remove-image:hover, .frosted-remove-image:focus {
+    background: #ff6b4a;
   }
 `}</style> 
