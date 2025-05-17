@@ -95,6 +95,23 @@ function createNewConversation(initialMessage: ChatMessage): Conversation {
 // At the top of ChatPage, get the user's email from localStorage
 const userEmail = typeof window !== 'undefined' ? localStorage.getItem('ai_student_email') : null;
 
+// Add AnimatedAIMessage component for word-by-word animation
+function AnimatedAIMessage({ content }: { content: string }) {
+  const [displayed, setDisplayed] = useState('');
+  useEffect(() => {
+    setDisplayed('');
+    if (!content) return;
+    let i = 0;
+    const interval = setInterval(() => {
+      setDisplayed(content.slice(0, i + 1));
+      i++;
+      if (i >= content.length) clearInterval(interval);
+    }, 16); // ~60 chars/sec
+    return () => clearInterval(interval);
+  }, [content]);
+  return <span>{displayed}</span>;
+}
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -107,6 +124,7 @@ export default function ChatPage() {
   const [activeConversationId, setActiveConversationId] = useState<string | null>(null);
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   // Ensure client-side only code
   useEffect(() => {
@@ -119,8 +137,7 @@ export default function ChatPage() {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        const imageUrl = reader.result as string;
-        setMessages(prev => [...prev, { role: 'user', content: 'Sent an image', type: 'image', imageUrl, timestamp: Date.now() }]);
+        setSelectedImage(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -579,6 +596,11 @@ export default function ChatPage() {
               )}
               {messages.map((message, index) => {
                 const isUser = message.role === 'user';
+                const isLatestAI =
+                  !isUser &&
+                  index === messages.length - 1 &&
+                  isLoading &&
+                  !message.isThinking;
                 return (
                   <div
                     key={index}
@@ -638,6 +660,8 @@ export default function ChatPage() {
                       >
                         {message.isThinking ? (
                           <span className="reasoning-animated-strong">Reasoning</span>
+                        ) : isLatestAI ? (
+                          <AnimatedAIMessage content={message.content} />
                         ) : (
                           <>
                             {message.type === 'image' && message.imageUrl && (
@@ -712,29 +736,39 @@ export default function ChatPage() {
           {/* Input bar: glassy, floating, visually consistent with bubbles */}
           <div className="w-full flex justify-center mb-20">
             <div className="w-full max-w-3xl mx-auto">
-              <form onSubmit={handleSubmit} className="flex gap-2 items-center glass-bubble bg-white/10 backdrop-blur-lg rounded-full px-4 py-2 border border-white/20 shadow-xl" style={{ background: 'rgba(255,255,255,0.08)' }}>
+              <form onSubmit={handleSubmit} className="flex gap-2 items-center modern-chat-input glass-bubble bg-white/10 backdrop-blur-lg rounded-full px-4 py-2 border border-white/20 shadow-xl" style={{ background: 'rgba(255,255,255,0.08)' }}>
+                <label htmlFor="image-upload" className="image-upload-btn">
+                  📎
+                  <input
+                    id="image-upload"
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageUpload}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                </label>
                 <input
                   type="text"
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Type your message..."
-                  className="flex-1 bg-transparent text-white placeholder-white/50 focus:outline-none border-none shadow-none"
-                />
-                <input
-                  type="file"
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  accept="image/*"
-                  className="hidden"
+                  className="flex-1 bg-transparent text-white placeholder-white/50 focus:outline-none border-none shadow-none modern-input"
                 />
                 <button
                   type="submit"
                   disabled={isLoading}
-                  className="glass-btn bg-gradient-to-br from-[#e93e1e] to-orange-400 text-white rounded-full p-2 hover:from-[#e93e1e]/80 hover:to-orange-400/80 transition-colors disabled:opacity-50 border border-white/10 shadow-lg flex items-center justify-center"
+                  className="modern-send-btn glass-btn bg-gradient-to-br from-[#e93e1e] to-orange-400 text-white rounded-full p-2 hover:from-[#e93e1e]/80 hover:to-orange-400/80 transition-colors disabled:opacity-50 border border-white/10 shadow-lg flex items-center justify-center"
                 >
-                  Send
+                  ➤
                 </button>
               </form>
+              {selectedImage && (
+                <div className="image-preview-container">
+                  <img src={selectedImage} alt="Preview" className="image-preview" />
+                  <button className="remove-image-btn" onClick={() => setSelectedImage(null)}>✕</button>
+                </div>
+              )}
             </div>
           </div>
           <DynamicNavigation onHomeClick={() => router.push('/')} />
@@ -763,4 +797,69 @@ export default function ChatPage() {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
-*/ 
+*/
+
+<style jsx>{`
+  .modern-chat-input {
+    background: rgba(255,255,255,0.13);
+    border-radius: 2rem;
+    box-shadow: 0 2px 16px 0 rgba(233,62,30,0.10);
+    border: 1.5px solid rgba(233,62,30,0.22);
+    padding: 0.5em 1em;
+    align-items: center;
+  }
+  .modern-input {
+    font-size: 1.1rem;
+    padding: 0.7em 1em;
+    border-radius: 1.5rem;
+    background: none;
+    color: #fff;
+  }
+  .modern-send-btn {
+    font-size: 1.5rem;
+    padding: 0.5em 1em;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #e93e1e 70%, #ff6b4a 100%);
+    color: #fff;
+    border: none;
+    box-shadow: 0 2px 8px 0 rgba(233,62,30,0.10);
+    transition: background 0.2s, box-shadow 0.2s;
+  }
+  .image-upload-btn {
+    cursor: pointer;
+    font-size: 1.3rem;
+    margin-right: 0.5em;
+    color: #e93e1e;
+    background: none;
+    border: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+  }
+  .image-preview-container {
+    margin-top: 0.5em;
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+  .image-preview {
+    max-width: 120px;
+    max-height: 80px;
+    border-radius: 0.5em;
+    border: 1.5px solid #e93e1e;
+    box-shadow: 0 2px 8px 0 rgba(233,62,30,0.10);
+  }
+  .remove-image-btn {
+    background: #e93e1e;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+`}</style> 
